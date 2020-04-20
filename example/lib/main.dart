@@ -74,6 +74,36 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<List<AudioFile>> getAudioFilesBySize() async {
+    if (!await checkStoragePermission()) {
+      return List<AudioFile>();
+    }
+
+    List<AudioFile> temp;
+    try {
+      temp = await AudioFinder.getAudioFilesBySize(0.2, true);
+      return temp;
+    } on PlatformException catch (error) {
+      print(error.message);
+      return new List<AudioFile>();
+    }
+  }
+
+  Future<List<AudioFile>> getAudioFilesByLength() async {
+    if (!await checkStoragePermission()) {
+      return List<AudioFile>();
+    }
+
+    List<AudioFile> temp;
+    try {
+      temp = await AudioFinder.getAudioFilesByLength(80000, false);
+      return temp;
+    } on PlatformException catch (error) {
+      print(error.message);
+      return new List<AudioFile>();
+    }
+  }
+
   Future<List<AudioFile>> findAudioFileByName() async {
     if (!await checkStoragePermission()) {
       return List<AudioFile>();
@@ -177,13 +207,16 @@ class _MyAppState extends State<MyApp> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
+          type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
                 icon: Icon(Icons.library_music), title: Text("All files")),
             BottomNavigationBarItem(
                 icon: Icon(Icons.folder), title: Text("By folder")),
             BottomNavigationBarItem(
-                icon: Icon(Icons.notifications), title: Text("Notifications")),
+                icon: Icon(Icons.notifications), title: Text("By purpose")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.chevron_right), title: Text("By Size")),
           ],
           onTap: (index) {
             if (index == 0) {
@@ -192,6 +225,8 @@ class _MyAppState extends State<MyApp> {
               _futureAudioFiles = getAudioFilesFromFolder();
             } else if (index == 2) {
               _futureAudioFiles = getAudioFilesByPurpose();
+            } else if (index == 3) {
+              _futureAudioFiles = getAudioFilesBySize();
             }
             setState(() {
               _currentIndex = index;

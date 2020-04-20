@@ -53,6 +53,22 @@ public class AudioHelper {
         return getAudioData(context, uri, audioDataColumns, MediaStore.Audio.Media.DATA + " like ? ", new String[]{"%" + fileName + "%"}, null);
     }
 
+    public static List<Map<String, Object>> getAudioFilesBySize(final Context context, final String size, final boolean moreThan) {
+        if(moreThan){
+            return getAudioData(context, uri, audioDataColumns, MediaStore.Audio.Media.SIZE + " >= ? ", new String[]{size}, null);
+        } else {
+            return getAudioData(context, uri, audioDataColumns, MediaStore.Audio.Media.SIZE + " <= ? ", new String[]{size}, null);
+        }
+    }
+
+    public static List<Map<String, Object>> getAudioFilesByLength(final Context context, final String length, final boolean longerThan) {
+        if(longerThan){
+            return getAudioData(context, uri, audioDataColumns, MediaStore.Audio.Media.DURATION + " >= ? ", new String[]{length}, null);
+        } else {
+            return getAudioData(context, uri, audioDataColumns, MediaStore.Audio.Media.DURATION + " <= ? ", new String[]{length}, null);
+        }
+    }
+
     public static List<Map<String, Object>> getAudioData(final Context context, final Uri uri, final String[] dataColumns, final String selection, final String[] arguments, final String sortOrder){
         final List<Map<String, Object>> resultAudioList;
 

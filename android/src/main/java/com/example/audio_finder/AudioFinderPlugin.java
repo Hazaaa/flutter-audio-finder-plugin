@@ -36,25 +36,49 @@ public class AudioFinderPlugin implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        if (call.method.equals("getAllAudioFiles")) {
-            result.success(AudioHelper.getAllAudioFilesFromDevice(context));
-        } else if (call.method.equals("getAudioFilesFromFolder")) {
-            if (!call.hasArgument("folderName")) {
-                result.error("ARGUMENT_ERROR", "Argument 'folderName' is missing.", null);
-            }
-            result.success(AudioHelper.getAudioFilesFromFolder(context, (String) call.argument("folderName")));
-        } else if (call.method.equals("getAudioFilesByPurpose")) {
-            if (!call.hasArgument("purpose")) {
-                result.error("ARGUMENT_ERROR", "Argument 'purpose' is missing.", null);
-            }
-            result.success(AudioHelper.getAudioFilesByPurpose(context, (String) call.argument("purpose")));
-        } else if (call.method.equals("findAudioFileByName")) {
-            if (!call.hasArgument("fileName")) {
-                result.error("ARGUMENT_ERROR", "Argument 'fileName' is missing.", null);
-            }
-            result.success(AudioHelper.findAudioFileByName(context, (String) call.argument("fileName")));
-        } else {
-            result.notImplemented();
+        switch (call.method) {
+            case "getAllAudioFiles":
+                result.success(AudioHelper.getAllAudioFilesFromDevice(context));
+                break;
+            case "getAudioFilesFromFolder":
+                if (!call.hasArgument("folderName")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'folderName' is missing.", null);
+                }
+                result.success(AudioHelper.getAudioFilesFromFolder(context, (String) call.argument("folderName")));
+                break;
+            case "getAudioFilesByPurpose":
+                if (!call.hasArgument("purpose")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'purpose' is missing.", null);
+                }
+                result.success(AudioHelper.getAudioFilesByPurpose(context, (String) call.argument("purpose")));
+                break;
+            case "findAudioFileByName":
+                if (!call.hasArgument("fileName")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'fileName' is missing.", null);
+                }
+                result.success(AudioHelper.findAudioFileByName(context, (String) call.argument("fileName")));
+                break;
+            case "getAudioFilesBySize":
+                if (!call.hasArgument("size")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'size' is missing.", null);
+                }
+                if (!call.hasArgument("moreThan")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'moreThan' is missing.", null);
+                }
+                result.success(AudioHelper.getAudioFilesBySize(context, (String) call.argument("size"), (boolean) call.argument("moreThan")));
+                break;
+            case "getAudioFilesByLength":
+                if (!call.hasArgument("length")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'length' is missing.", null);
+                }
+                if (!call.hasArgument("longerThan")) {
+                    result.error("ARGUMENT_ERROR", "Argument 'longerThan' is missing.", null);
+                }
+                result.success(AudioHelper.getAudioFilesBySize(context, (String) call.argument("length"), (boolean) call.argument("longerThan")));
+                break;
+            default:
+                result.notImplemented();
+                break;
         }
     }
 
