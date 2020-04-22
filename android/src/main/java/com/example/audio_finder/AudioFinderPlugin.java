@@ -74,7 +74,43 @@ public class AudioFinderPlugin implements FlutterPlugin, MethodCallHandler {
                 if (!call.hasArgument("longerThan")) {
                     result.error("ARGUMENT_ERROR", "Argument 'longerThan' is missing.", null);
                 }
-                result.success(AudioHelper.getAudioFilesBySize(context, (String) call.argument("length"), (boolean) call.argument("longerThan")));
+                result.success(AudioHelper.getAudioFilesByLength(context, (String) call.argument("length"), (boolean) call.argument("longerThan")));
+                break;
+            case "getArtistsData":
+                if (call.hasArgument("artistId")) {
+                    if (!call.hasArgument("includeTracks")) {
+                        result.error("ARGUMENT_ERROR", "Argument 'includeTracks' is missing.", null);
+                    }
+                    result.success(AudioHelper.getArtistById(context, (String) call.argument("artistId"), (boolean) call.hasArgument("includeTracks")));
+                } else if (call.hasArgument("artistName")) {
+                    if (!call.hasArgument("includeTracks")) {
+                        result.error("ARGUMENT_ERROR", "Argument 'includeTracks' is missing.", null);
+                    }
+                    result.success(AudioHelper.getArtistByName(context, (String) call.argument("artistName"), (boolean) call.hasArgument("includeTracks")));
+                } else {
+                    result.success(AudioHelper.getAllArtists(context));
+                }
+                break;
+            case "getAlbumsData":
+                if (call.hasArgument("albumId")) {
+                    if (!call.hasArgument("includeTracks")) {
+                        result.error("ARGUMENT_ERROR", "Argument 'includeTracks' is missing.", null);
+                    }
+                    result.success(AudioHelper.getAlbumById(context, (String) call.argument("albumId"), (boolean) call.hasArgument("includeTracks")));
+                } else if (call.hasArgument("albumName")) {
+                    if (!call.hasArgument("includeTracks")) {
+                        result.error("ARGUMENT_ERROR", "Argument 'includeTracks' is missing.", null);
+                    }
+                    result.success(AudioHelper.getAlbumByName(context, (String) call.argument("albumName"), (boolean) call.hasArgument("includeTracks")));
+                } else {
+                    result.success(AudioHelper.getAllAlbums(context));
+                }
+                break;
+            case "getPlaylistsData":
+                result.success(AudioHelper.getAllPlaylists(context));
+                break;
+            case "getGenresData":
+                result.success(AudioHelper.getAllGenres(context));
                 break;
             default:
                 result.notImplemented();

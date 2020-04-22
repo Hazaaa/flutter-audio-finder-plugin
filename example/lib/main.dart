@@ -1,4 +1,7 @@
+import 'package:audio_finder_example/album_ListTile.dart';
+import 'package:audio_finder_example/artist_ListTile.dart';
 import 'package:audio_finder_example/audio_ListTile.dart';
+import 'package:audio_finder_example/playlist_ListTile.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -15,6 +18,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Future<List<AudioFile>> _futureAudioFiles;
+  Future<List<Artist>> _futureArtists;
+  Future<List<Album>> _futureAlbums;
+  Future<List<Playlist>> _futurePlaylists;
+  Future<List<Genre>> _futureGenres;
 
   int _currentIndex = 0;
   TextEditingController searchController = new TextEditingController();
@@ -59,48 +66,63 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<List<AudioFile>> getAudioFilesByPurpose() async {
+  Future<List<Artist>> getAllArtists() async {
     if (!await checkStoragePermission()) {
-      return List<AudioFile>();
+      return List<Artist>();
     }
 
-    List<AudioFile> temp;
+    List<Artist> temp;
     try {
-      temp = await AudioFinder.getAudioFilesByPurpose(AudioPurpose.Music);
+      temp = await AudioFinder.getAllArtists();
       return temp;
     } on PlatformException catch (error) {
       print(error.message);
-      return new List<AudioFile>();
+      return new List<Artist>();
     }
   }
 
-  Future<List<AudioFile>> getAudioFilesBySize() async {
+  Future<List<Album>> getAllAlbums() async {
     if (!await checkStoragePermission()) {
-      return List<AudioFile>();
+      return List<Album>();
     }
 
-    List<AudioFile> temp;
+    List<Album> temp;
     try {
-      temp = await AudioFinder.getAudioFilesBySize(0.2, true);
+      temp = await AudioFinder.getAllAlbums();
       return temp;
     } on PlatformException catch (error) {
       print(error.message);
-      return new List<AudioFile>();
+      return new List<Album>();
     }
   }
 
-  Future<List<AudioFile>> getAudioFilesByLength() async {
+  Future<List<Playlist>> getAllPlaylists() async {
     if (!await checkStoragePermission()) {
-      return List<AudioFile>();
+      return List<Playlist>();
     }
 
-    List<AudioFile> temp;
+    List<Playlist> temp;
     try {
-      temp = await AudioFinder.getAudioFilesByLength(80000, false);
+      temp = await AudioFinder.getAllPlaylists();
       return temp;
     } on PlatformException catch (error) {
       print(error.message);
-      return new List<AudioFile>();
+      return new List<Playlist>();
+    }
+  }
+
+  Future<List<Genre>> getAllGenres() async {
+    if (!await checkStoragePermission()) {
+      return List<Genre>();
+    }
+
+    List<Genre> temp;
+    try {
+      temp = await AudioFinder.getAllGenres();
+      return temp;
+    } on PlatformException catch (error) {
+      print(error.message);
+      return new List<Genre>();
     }
   }
 
@@ -129,6 +151,22 @@ class _MyAppState extends State<MyApp> {
       }
     } else {
       return true;
+    }
+  }
+
+  Future<dynamic> getRightFuture() {
+    if (_currentIndex == 0) {
+      return getAllAudioFiles();
+    } else if (_currentIndex == 1) {
+      return getAudioFilesFromFolder();
+    } else if (_currentIndex == 2) {
+      return getAllAlbums();
+    } else if (_currentIndex == 3) {
+      return getAllArtists();
+    } else if (_currentIndex == 4) {
+      return getAllPlaylists();
+    } else {
+      return getAllGenres();
     }
   }
 
@@ -167,8 +205,8 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
             FutureBuilder(
-              future: _futureAudioFiles,
-              builder: (context, AsyncSnapshot<List<AudioFile>> snapshot) {
+              future: getRightFuture(),
+              builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
                       child: CircularProgressIndicator(
@@ -177,9 +215,10 @@ class _MyAppState extends State<MyApp> {
                 } else {
                   return Expanded(
                     child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
+                      scrollDirection: Axis.vertical,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (_currentIndex == 0 || _currentIndex == 1) {
                           AudioFile temp = snapshot.data[index];
                           return AudioListTile(
                             id: temp.id.toString(),
@@ -198,7 +237,39 @@ class _MyAppState extends State<MyApp> {
                             type: temp.type,
                             size: temp.size.toString(),
                           );
-                        }),
+                        } else if (_currentIndex == 2) {
+                          Album temp = snapshot.data[index];
+                          return AlbumListTile(
+                            artist: temp.artist,
+                            id: temp.id.toString(),
+                            name: temp.name,
+                            numberOfTracks: temp.numberOfTracks.toString(),
+                            year: temp.year.toString(),
+                          );
+                        } else if (_currentIndex == 3) {
+                          Artist temp = snapshot.data[index];
+                          return ArtistListTile(
+                            numberOfAlbums: temp.numberOfAlbums.toString(),
+                            id: temp.id.toString(),
+                            name: temp.name,
+                            numberOfTracks: temp.numberOfTracks.toString(),
+                          );
+                        } else if (_currentIndex == 4) {
+                          Playlist temp = snapshot.data[index];
+                          return PlaylistListTile(
+                            data: temp.data,
+                            id: temp.id.toString(),
+                            name: temp.name,
+                          );
+                        } else {
+                          Genre temp = snapshot.data[index];
+                          return ListTile(
+                            leading: Text(temp.id.toString()),
+                            title: Text(temp.name),
+                          );
+                        }
+                      },
+                    ),
                   );
                 }
               },
@@ -214,9 +285,14 @@ class _MyAppState extends State<MyApp> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.folder), title: Text("By folder")),
             BottomNavigationBarItem(
-                icon: Icon(Icons.notifications), title: Text("By purpose")),
+                icon: Icon(Icons.album), title: Text("All albums")),
             BottomNavigationBarItem(
-                icon: Icon(Icons.chevron_right), title: Text("By Size")),
+                icon: Icon(Icons.supervised_user_circle),
+                title: Text("All artists")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.queue_music), title: Text("All playlists")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.music_note), title: Text("All genres")),
           ],
           onTap: (index) {
             if (index == 0) {
@@ -224,9 +300,13 @@ class _MyAppState extends State<MyApp> {
             } else if (index == 1) {
               _futureAudioFiles = getAudioFilesFromFolder();
             } else if (index == 2) {
-              _futureAudioFiles = getAudioFilesByPurpose();
+              _futureAlbums = getAllAlbums();
             } else if (index == 3) {
-              _futureAudioFiles = getAudioFilesBySize();
+              _futureArtists = getAllArtists();
+            } else if (index == 4) {
+              _futurePlaylists = getAllPlaylists();
+            } else if (index == 5) {
+              _futureGenres = getAllGenres();
             }
             setState(() {
               _currentIndex = index;
