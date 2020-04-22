@@ -29,7 +29,7 @@ Flutter plugin for retrieving all audio files from device.
 
 Add `audio_finder` as a dependency in your pubspec.yaml file.
 
-*Note:* If you see this message: 
+>*Note:* If you see this message: 
   ```.../AudioFinderPlugin.java uses or overrides a deprecated API. Note: Recompile with -Xlint:deprecation for details.```
 It means that plugin is using java methods that are deprecated in AndroidX but they are needed for older APIs. This is just warning not error. Your code will compile and app will run just fine.
 
