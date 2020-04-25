@@ -21,9 +21,12 @@ Flutter plugin for retrieving all audio files from device.
 - [x] - Get all audio files for certain playlist.
 - [x] - Get all genres.
 - [x] - Get all audio files for certain genre.
+
+## Todo
+
 - [ ] - Get list of folders that contains one or more audio files.
-- [ ] - ADD PERMISSION CONTROL SO NO DEPENDENCY IS NEEDED!
-- [ ] - ADD TESTS FOR EVERYTHING!
+- [ ] - Add permission control.
+- [ ] - Add tests for everything.
 
 ## Installation
 
