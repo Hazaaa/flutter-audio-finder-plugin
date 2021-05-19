@@ -1,7 +1,5 @@
 # Audio Finder Plugin
 
-[![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dartlang.org/packages/camera)
-
 Flutter plugin for retrieving all audio files from device. 
 
 *Note:* This plugin is for now only for Android. iOS implementation will be in future and if anyone want to contribute to iOS implementation is more than welcome to do that.
